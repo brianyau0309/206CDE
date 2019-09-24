@@ -90,7 +90,7 @@ SELECT
 FROM 
   DUAL;
 
---  Q.10: Show all job_title from Staff table where the job_title starts from the character ‘T’
+--  Q.10: Show all job_title from Staff table where the job_title starts from the character T
 SELECT 
   TITLE 
 FROM 
@@ -98,7 +98,7 @@ FROM
 WHERE 
   TITLE LIKE 'T%';
 
---  Q.11: Show all names from Staff table where the name ends with the character ‘n’ or ‘N’
+--  Q.11: Show all names from Staff table where the name ends with the character N or n
 SELECT 
   NAME 
 FROM 
@@ -106,7 +106,7 @@ FROM
 WHERE 
   UPPER(NAME) LIKE '%N';
 
---  Q.12: Show all names from Student table where the name contains the character ‘r’
+--  Q.12: Show all names from Student table where the name contains the character ?�r??
 SELECT 
   STUDENT_NAME 
 FROM 
@@ -156,7 +156,7 @@ GROUP BY
 HAVING 
   SUM(HOUR_SALARY*EXTRA_HOUR) > 1500;
 
---  Q.18: Add one new column ‘birthday’ to the table Student, and make Mary Wong’s birthday as ’02-Mar-1995’ and find the age of Mary Wong (ignore months, just show the year of age)
+--  Q.18: Add one new column birthday to the table Student, and make Mary Wong birthday as '02-Mar-1995' and find the age of Mary Wong (ignore months, just show the year of age)
 
 --  Add new column brithday
 ALTER TABLE 
@@ -173,16 +173,33 @@ WHERE
   STUDENT_NAME = 'Mary Wong';
 
 --  Show Age
+
+--  Case 1
 SELECT 
   STUDENT_NAME, (
-                  TO_CHAR(SYSDATE, 'YYYY') - TO_CHAR(BRITHDAY, 'YYYY')
+                  CASE 
+                    WHEN (TO_CHAR(SYSDATE, 'MM') - TO_CHAR(BRITHDAY, 'MM')) >= 0 
+                      THEN (TO_CHAR(SYSDATE, 'YYYY') - TO_CHAR(BRITHDAY, 'YYYY')) 
+                    ELSE (TO_CHAR(SYSDATE, 'YYYY') - TO_CHAR(BRITHDAY, 'YYYY')-1) 
+                  END
                 ) as AGE
 FROM 
-  STUDENT, DUAL 
+  STUDENT
+WHERE 
+  STUDENT_NAME = 'Mary Wong';
+
+--  Case 2
+SELECT
+  STUDENT_NAME, 
+  trunc(months_between(sysdate, brithday) / 12) as Age
+FROM 
+  STUDENT 
 WHERE 
   STUDENT_NAME = 'Mary Wong';
 
 --  Q.19: Show the month as well
+
+--  Case 1
 SELECT 
   STUDENT_NAME, (
                   CASE 
@@ -199,6 +216,16 @@ SELECT
                   END
                 ) as AGE_MONTHS 
 FROM 
-  STUDENT, DUAL 
+  STUDENT 
+WHERE 
+  STUDENT_NAME = 'Mary Wong';
+  
+--  Case 2
+SELECT
+  STUDENT_NAME, 
+  TRUNC(MONTHS_BETWEEN(sysdate, brithday) / 12) as Age,
+  TRUNC(MOD(MONTHS_BETWEEN(sysdate, brithday), 12)) as Age_months
+FROM 
+  STUDENT 
 WHERE 
   STUDENT_NAME = 'Mary Wong';
