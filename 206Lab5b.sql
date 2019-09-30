@@ -211,4 +211,69 @@ SET credits = (SELECT
                  a.module_code = b.module_code 
               );
 --  Special Challenge
---  1              
+--  1. Find the better-achieved module(s) of each student.  
+--     Better-achieved module means the Actual score of that modules is higher than this student¡¦s overall average score. 
+--     Show only Student_id, Module_code, and Actual Score of each student, order by student_id and module_code.
+--     (note: Actual score = (Assign_score+Exam_score)/2 )
+--     (note: Average score = Average of all actual score of all modules of each student)
+SELECT
+  b.student_id, b.module_code, b.actual_score
+FROM
+  (SELECT
+     student_id,
+     module_code,
+     (NVL(assign_score, 0)+NVL(exam_score, 0))/2 actual_score 
+   FROM
+     study) b,
+  (SELECT
+     student_id,
+     AVG((NVL(assign_score, 0)+NVL(exam_score, 0))/2) avg_score 
+   FROM
+     study
+   GROUP BY
+     student_id) c
+WHERE
+  b.student_id = c.student_id and
+  b.actual_score > c.avg_score
+ORDER BY 
+  student_id;
+
+--  2. For each module, show the student (student name, student_id, module_code, exam_score) 
+--     who achieved the highest exam_score.
+SELECT
+  a.module_code, a.student_id, b.student_name, a.exam_score
+FROM
+study a, student b, (SELECT 
+                       module_code, MAX(exam_score) hightest
+                     FROM 
+                       study
+                     GROUP BY
+                       module_code) c
+WHERE
+  a.student_id = b.student_id and
+  a.module_code = c.module_code and
+  a.exam_score = c.hightest
+ORDER BY
+  a.module_code ASC;
+
+--  3. For each module, show the student (student name, student_id, module_code, exam_score)
+--     who achieved the highest Actual_score.
+SELECT
+  a.module_code, 
+  a.student_id, 
+  b.student_name, 
+  (NVL(a.assign_score, 0)+NVL(a.exam_score, 0))/2 actual_score
+FROM
+  study a, student b, (SELECT 
+                         module_code, 
+                         MAX((NVL(assign_score, 0)+NVL(exam_score, 0))/2) hightest
+                       FROM 
+                         study
+                       GROUP BY
+                         module_code) c
+WHERE
+  a.student_id = b.student_id and
+  a.module_code = c.module_code and
+  (NVL(a.assign_score, 0)+NVL(a.exam_score, 0))/2 = c.hightest
+ORDER BY
+  a.module_code ASC;

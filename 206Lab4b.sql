@@ -157,10 +157,29 @@ FROM
 
 --  18. Ask your classmate to stop your access right to his/her Staff Table.
 REVOKE SELECT ON staff FROM stu043;
---  19. Show who (student_id) has the highest exam_score
 
+--  19. Show who (student_id) has the highest exam_score
+SELECT
+  a.student_id
+FROM 
+  study a
+WHERE
+  a.exam_score = (SELECT MAX(exam_score) FROM study);
 
 --  20. For each module, show who (student_id and module_code) 
---  has the highest exam_score of that module.  Show the result in acceding order of module_code.
-SELECT module_name, student_id
-FROM study;
+--      has the highest exam_score of that module.  
+--      Show the result in acceding order of module_code.
+SELECT
+  a.module_code, a.student_id, a.exam_score
+FROM
+study a, (SELECT 
+            module_code, MAX(exam_score) hightest
+          FROM 
+            study
+          GROUP BY
+            module_code) b
+WHERE
+  a.module_code = b.module_code and
+  a.exam_score = b.hightest
+ORDER BY
+  a.module_code ASC;
