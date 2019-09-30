@@ -16,7 +16,7 @@ FROM
 WHERE
   TO_CHAR(exam_date, 'Mon') = 'Jan';
   
---  3. Show the average exam_score of student ．S004・ 
+--  3. Show the average exam_score of student S004
 --  (if the student did not take an exam, the score will not be counted).
 SELECT
   AVG(exam_score) as avg_exam_score
@@ -25,7 +25,7 @@ FROM
 WHERE
   student_id = 'S004';
 
---  4. Show the average exam_score of student ．S004・ 
+--  4. Show the average exam_score of student S004
 --  (if the student did not take an exam, the score will be treated as 0 (zero)).
 SELECT
   AVG(NVL(exam_score,0)) as avg_exam_score
@@ -126,7 +126,7 @@ GROUP BY
 ORDER BY
   student_id;
 
---  15. Redo (14) above, assign a column heading ．Average_Score・ for the average score column.
+--  15. Redo (14) above, assign a column heading Average_Score for the average score column.
 SELECT 
   student_id, 
   TO_CHAR(
@@ -141,11 +141,26 @@ ORDER BY
 
 --  16. Talk to the classmate next to you, ask him/her to allow you access (Select Right) his/her Staff Table. 
 --  (hints: see SQL command Grant on lecture notes)
-GRANT SELECT ON staff to stu???;
+GRANT SELECT ON staff to stu043;
 
 --  17. Create a table named Other_Staff, copy the records from your classmate・s Staff Table into Other_Staff.
 CREATE TABLE other_staff
-as SELECT * FROM stu???.staff;
+as SELECT 
+     * 
+   FROM 
+     stu043.staff;
+
+SELECT
+  *
+FROM
+  other_staff;
 
 --  18. Ask your classmate to stop your access right to his/her Staff Table.
-REVOKE SELECT ON staff to stu???;
+REVOKE SELECT ON staff FROM stu043;
+--  19. Show who (student_id) has the highest exam_score
+
+
+--  20. For each module, show who (student_id and module_code) 
+--  has the highest exam_score of that module.  Show the result in acceding order of module_code.
+SELECT module_name, student_id
+FROM study;
